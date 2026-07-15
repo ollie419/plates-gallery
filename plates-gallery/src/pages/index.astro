@@ -125,6 +125,14 @@ const photos = await sanityClient.fetch(`
     padding: 0 300px 100px;
   }
 
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+    padding: 0 12px 100px;
+    gap: 4px;
+  }
+}
+
   .thumb {
     aspect-ratio: 16 / 9;
     overflow: hidden;
