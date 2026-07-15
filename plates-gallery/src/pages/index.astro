@@ -1,168 +1,218 @@
 ---
-   import { sanityClient } from './lib/sanity';
+import { sanityClient } from './lib/sanity';
 
-   const photos = await sanityClient.fetch(`
-     *[_type == "photo"] | order(order asc) {
-       "src": image.asset->url,
-       "width": image.asset->metadata.dimensions.width,
-       "height": image.asset->metadata.dimensions.height,
-       order
-     }
-   `);
-   ---
+const photos = await sanityClient.fetch(`
+  *[_type == "photo"] | order(order asc) {
+    "src": image.asset->url,
+    "width": image.asset->metadata.dimensions.width,
+    "height": image.asset->metadata.dimensions.height,
+    order
+  }
+`);
+---
 
-   <html>
-     <head>
-       <title>Plates Gallery</title>
-     </head>
-     <body>
-  <!-- PASSWORD GATE -->
-  <div class="gate" id="gate">
-    <div class="gate-box">
-      <input
-        type="password"
-        id="pwInput"
-        placeholder="enter password"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-      >
-      <div class="gate-error" id="gateError">incorrect password</div>
+<html>
+  <head>
+    <title>Plates Gallery</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+
+    <!-- PASSWORD GATE -->
+    <div class="gate" id="gate">
+      <div class="gate-box">
+        <input
+          type="password"
+          id="pwInput"
+          placeholder="enter password"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+        >
+        <button id="enterBtn">Enter</button>
+        <div class="gate-error" id="gateError">incorrect password</div>
+      </div>
     </div>
-  </div>
 
-  <div class="gallery" id="gallery">
-    <div class="stage">
+    <!-- SITE TITLE -->
+    <h1 class="site-title">PLATES</h1>
+
+    <!-- GRID -->
+    <div class="grid" id="grid">
       {photos.map((photo, index) => (
-        <div class={`slide${index === 0 ? ' active' : ''}`}>
-          <img src={photo.src} width={photo.width} height={photo.height} alt="" />
+        <div class="thumb" data-index={index}>
+          <img src={photo.src} width={photo.width} height={photo.height} alt="" loading="lazy" />
         </div>
       ))}
     </div>
-  </div>
 
-  <!-- BOTTOM NAV — info icon only -->
-  <nav class="bottom-nav">
-    <button id="infoBtn" aria-label="Info">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-      </svg>
-    </button>
-  </nav>
-
-  <!-- INFO POPUP — Mac-style window -->
-  <div class="info-overlay" id="infoOverlay">
-    <div class="mac-window">
-      <div class="mac-titlebar">
-        <button class="mac-btn red"    id="closeBtn" aria-label="Close"></button>
-        <button class="mac-btn yellow" aria-label="Minimise" onclick="return false"></button>
-        <button class="mac-btn green"  aria-label="Expand"   onclick="return false"></button>
+    <!-- LIGHTBOX -->
+    <div class="lightbox" id="lightbox">
+      <div class="lightbox-stage">
+        <img id="lightboxImg" src="" alt="" />
       </div>
+      <div class="lightbox-nav">
+        <button class="nav-arrow" id="prevBtn" aria-label="Previous">
+          <svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8" stroke="black" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="nav-arrow" id="nextBtn" aria-label="Next">
+          <svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8" stroke="black" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
 
-      <div class="mac-content">
-        <h1>P L A T E 5.</h1>
-        <p>
-          Good plates. 
-        </p>
-        <div class="socials">
-          <a href="https://instagram.com" target="_blank" aria-label="Instagram">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="#f0f0ec" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-            </svg>
-          </a>
+    <!-- BOTTOM BAR — info icon -->
+    <div class="bottom-bar">
+      <button id="infoBtn" aria-label="Info">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- INFO POPUP — Mac-style window -->
+    <div class="info-overlay" id="infoOverlay">
+      <div class="mac-window">
+        <div class="mac-titlebar">
+          <button class="mac-btn red"    id="closeBtn" aria-label="Close"></button>
+          <button class="mac-btn yellow" aria-label="Minimise" onclick="return false"></button>
+          <button class="mac-btn green"  aria-label="Expand"   onclick="return false"></button>
+        </div>
+        <div class="mac-content">
+          <h1>P L A T E 5.</h1>
+          <p>A collection of license plates by Ollie Adegboye</p>
+          <div class="socials">
+            <a href="https://instagram.com/ollie.ade" target="_blank" aria-label="Instagram">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#f0f0ec" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-     </body>
-   </html>
 
-   <style>
-   * { margin: 0; padding: 0; box-sizing: border-box; }
+  </body>
+</html>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     background: #0a0a0a;
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    user-select: none;
+    min-height: 100dvh;
+    overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* ── GALLERY ── */
-  .gallery {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px 24px 72px;
+  /* ── SITE TITLE ── */
+  .site-title {
+    text-align: center;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: #f0f0ec;
+    padding: 64px 0 40px;
+  }
+
+  /* ── GRID ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 9px;
+    padding: 0 300px 100px;
+  }
+
+  .thumb {
+    aspect-ratio: 16 / 9;
     overflow: hidden;
     cursor: pointer;
+    background: #111;
   }
 
-  .stage {
-    position: relative;
+  .thumb img {
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.15s;
   }
 
-  .slide {
-    position: absolute;
+  .thumb:hover img {
+    opacity: 0.8;
+  }
+
+  /* ── LIGHTBOX ── */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 30;
     display: none;
     align-items: center;
     justify-content: center;
-    max-width: min(560px, calc(100vw - 48px));
-    max-height: calc(100dvh - 96px);
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
+    flex-direction: column;
+    gap: 24px;
   }
 
-  .slide.active {
+  .lightbox.open {
     display: flex;
-    pointer-events: auto;
   }
 
-  .slide img {
+  .lightbox-stage {
+    width: min(80vw, 960px);
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox-stage img {
     max-width: 100%;
-    max-height: calc(100dvh - 96px);
+    max-height: 100%;
     width: auto;
     height: auto;
     object-fit: contain;
-    display: block;
   }
 
-  .placeholder {
-    width: 500px;
-    height: 400px;
-    max-width: calc(100vw - 48px);
-    background: #fff;
+  .lightbox-nav {
+    display: flex;
+    gap: 24px;
+  }
+
+  .nav-arrow {
+    position: static;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fde910;
+    border: none;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'DM Mono', 'Courier New', monospace;
-    font-size: 48px;
-    color: #ccc;
   }
 
-  /* ── BOTTOM NAV ── */
-  .bottom-nav {
+  .nav-arrow svg {
+    width: 8px;
+    height: 8px;
+  }
+
+  /* ── BOTTOM BAR ── */
+  .bottom-bar {
     position: fixed;
     bottom: 0; left: 0; right: 0;
+    height: 64px;
+    background: #0a0a0a;
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 28px;
-    padding: 0 0 150px;
+    justify-content: center;
     z-index: 10;
   }
 
-  .bottom-nav a,
-  .bottom-nav button {
+  .bottom-bar button {
     background: none;
     border: none;
     cursor: pointer;
@@ -170,20 +220,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.35;
-    transition: opacity 0.2s;
-    color: #fff;
-    text-decoration: none;
+    color: #fde910;
   }
 
-  .bottom-nav a:hover,
-  .bottom-nav button:hover { opacity: 1; }
-  #infoBtn {
-  color: #ff10f0;
-  opacity: 1;
-}
-
-  .bottom-nav svg {
+  .bottom-bar svg {
     width: 30px;
     height: 30px;
     fill: currentColor;
@@ -194,7 +234,7 @@
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.55);
-    z-index: 20;
+    z-index: 40;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -258,7 +298,7 @@
   }
 
   .mac-content h1 {
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: Helvetica, Arial, sans-serif;
     font-size: 28px;
     font-weight: 400;
     letter-spacing: -0.02em;
@@ -268,7 +308,7 @@
   }
 
   .mac-content p {
-    font-family: 'DM Mono', 'Courier New', monospace;
+    font-family: Helvetica, Arial, sans-serif;
     font-size: 13px;
     line-height: 1.85;
     color: #666;
@@ -329,6 +369,23 @@
 
   .gate-box input:focus { border-color: #555; }
 
+  .gate-box button {
+    width: 100%;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-family: 'DM Mono', 'Courier New', monospace;
+    font-size: 13px;
+    color: #f0f0ec;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .gate-box button:hover {
+    border-color: #555;
+  }
+
   .gate-box input.error { border-color: #ff5f57; }
 
   .gate-error {
@@ -341,24 +398,22 @@
   }
 
   .gate-error.show { opacity: 1; }
-   </style>
+</style>
 
-   <script>
-   
+<script>
   /* ── PASSWORD GATE ── */
   const PASSWORD = '101';
 
-  const gate     = document.getElementById('gate');
-  const pwInput  = document.getElementById('pwInput');
+  const gate      = document.getElementById('gate');
+  const pwInput   = document.getElementById('pwInput');
   const gateError = document.getElementById('gateError');
+  const enterBtn  = document.getElementById('enterBtn');
 
-  // Stay unlocked for the session
   if (sessionStorage.getItem('unlocked') === 'yes') {
     gate.classList.add('hidden');
   }
 
-  pwInput.addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter') return;
+  function checkPassword() {
     if (pwInput.value === PASSWORD) {
       sessionStorage.setItem('unlocked', 'yes');
       gate.classList.add('hidden');
@@ -372,62 +427,76 @@
         gateError.classList.remove('show');
       }, 1800);
     }
-  });
-
-  /* ── GALLERY ── */
-  const slides     = Array.from(document.querySelectorAll('.slide'));
-  const gallery    = document.getElementById('gallery');
-  const infoBtn    = document.getElementById('infoBtn');
-  const infoOverlay = document.getElementById('infoOverlay');
-  const closeBtn   = document.getElementById('closeBtn');
-
-  let current = 0;
-  const total = slides.length;
-
-  function goTo(next) {
-    if (next === current) return;
-    slides[current].classList.remove('active');
-    current = next;
-    slides[current].classList.add('active');
   }
 
-  function next() { goTo((current + 1) % total); }
-  function prev() { goTo((current - 1 + total) % total); }
-
-  /* ── click gallery ── */
-  gallery.addEventListener('click', () => {
-    if (!infoOverlay.classList.contains('open')) next();
+  pwInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') checkPassword();
   });
 
-  /* ── swipe ── */
-  let tx = 0, ty = 0, moved = false;
+  enterBtn.addEventListener('click', checkPassword);
 
-  gallery.addEventListener('touchstart', (e) => {
-    tx = e.touches[0].clientX;
-    ty = e.touches[0].clientY;
-    moved = false;
-  }, { passive: true });
+  /* ── GRID + LIGHTBOX ── */
+  const thumbs      = Array.from(document.querySelectorAll('.thumb'));
+  const lightbox     = document.getElementById('lightbox');
+  const lightboxImg  = document.getElementById('lightboxImg');
+  const prevBtn      = document.getElementById('prevBtn');
+  const nextBtn       = document.getElementById('nextBtn');
 
-  gallery.addEventListener('touchmove', () => { moved = true; }, { passive: true });
+  const sources = thumbs.map(t => t.querySelector('img').src);
+  let current = 0;
 
-  gallery.addEventListener('touchend', (e) => {
-    const dx = e.changedTouches[0].clientX - tx;
-    const dy = e.changedTouches[0].clientY - ty;
-    if (!moved || Math.abs(dy) > Math.abs(dx)) return;
-    if (dx < -40) next();
-    else if (dx > 40) prev();
+  function openLightbox(index) {
+    current = index;
+    lightboxImg.src = sources[current];
+    lightbox.classList.add('open');
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+  }
+
+  function showNext() {
+    current = (current + 1) % sources.length;
+    lightboxImg.src = sources[current];
+  }
+
+  function showPrev() {
+    current = (current - 1 + sources.length) % sources.length;
+    lightboxImg.src = sources[current];
+  }
+
+  thumbs.forEach((thumb) => {
+    thumb.addEventListener('click', () => {
+      openLightbox(Number(thumb.dataset.index));
+    });
   });
 
-  /* ── keyboard ── */
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  prevBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    showPrev();
+  });
+
+  nextBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    showNext();
+  });
+
   document.addEventListener('keydown', (e) => {
-    if (infoOverlay.classList.contains('open') && e.key === 'Escape') {
-      infoOverlay.classList.remove('open'); return;
-    }
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prev();
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') showNext();
+    if (e.key === 'ArrowLeft') showPrev();
   });
 
-  /* ── info popup ── */
+  /* ── INFO POPUP ── */
+  const infoBtn     = document.getElementById('infoBtn');
+  const infoOverlay = document.getElementById('infoOverlay');
+  const closeBtn    = document.getElementById('closeBtn');
+
   infoBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     infoOverlay.classList.add('open');
@@ -437,8 +506,7 @@
     infoOverlay.classList.remove('open');
   });
 
-  /* click backdrop to dismiss */
   infoOverlay.addEventListener('click', (e) => {
     if (e.target === infoOverlay) infoOverlay.classList.remove('open');
   });
-   </script>
+</script>
