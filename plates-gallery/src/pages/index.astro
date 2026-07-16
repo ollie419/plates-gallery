@@ -1,14 +1,16 @@
 ---
 import { sanityClient } from './lib/sanity';
 
-const photos = await sanityClient.fetch(`
-  *[_type == "photo"] | order(order asc) {
-    "src": image.asset->url,
-    "width": image.asset->metadata.dimensions.width,
-    "height": image.asset->metadata.dimensions.height,
-    order
+const galleryDoc = await sanityClient.fetch(`
+  *[_type == "gallery"][0] {
+    "photos": images[] {
+      "src": asset->url,
+      "width": asset->metadata.dimensions.width,
+      "height": asset->metadata.dimensions.height
+    }
   }
 `);
+const photos = galleryDoc.photos;
 ---
 
 <html>
