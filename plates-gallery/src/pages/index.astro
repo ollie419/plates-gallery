@@ -440,6 +440,8 @@ const photos = galleryDoc.photos;
     if (e.key === 'Enter') checkPassword();
   });
 
+  document.addEventListener('contextmenu', (e) => e.preventDefault());
+
   enterBtn.addEventListener('click', checkPassword);
 
   /* ── GRID + LIGHTBOX ── */
