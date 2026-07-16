@@ -124,6 +124,19 @@ const photos = galleryDoc.photos;
     padding: 0 300px 100px;
   }
 
+  .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 9px;
+  padding: 0 300px 100px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.grid.visible {
+  opacity: 1;
+}
+
 @media (max-width: 600px) {
   .grid {
     grid-template-columns: repeat(4, 1fr);
@@ -416,14 +429,16 @@ const photos = galleryDoc.photos;
   const gateError = document.getElementById('gateError');
   const enterBtn  = document.getElementById('enterBtn');
 
-  if (sessionStorage.getItem('unlocked') === 'yes') {
-    gate.classList.add('hidden');
-  }
+if (sessionStorage.getItem('unlocked') === 'yes') {
+  gate.classList.add('hidden');
+  document.getElementById('grid').classList.add('visible');
+}
 
   function checkPassword() {
     if (pwInput.value === PASSWORD) {
       sessionStorage.setItem('unlocked', 'yes');
       gate.classList.add('hidden');
+      document.getElementById('grid').classList.add('visible');
       pwInput.value = '';
     } else {
       pwInput.classList.add('error');
@@ -518,4 +533,12 @@ const photos = galleryDoc.photos;
   infoOverlay.addEventListener('click', (e) => {
     if (e.target === infoOverlay) infoOverlay.classList.remove('open');
   });
+
+  document.querySelectorAll('.thumb img').forEach((img) => {
+  if (img.complete) {
+    img.classList.add('loaded');
+  } else {
+    img.addEventListener('load', () => img.classList.add('loaded'));
+  }
+});
 </script>
