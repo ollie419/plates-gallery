@@ -37,40 +37,32 @@ const photos = galleryDoc.photos;
       </div>
     </div>
 
-    <!-- SITE TITLE -->
-   <img src="/PLATE5.png" alt="PLATES" class="site-title-img" />
+    <div class="page-container">
 
-    <!-- GRID -->
-    <div class="grid" id="grid">
-      {photos.map((photo, index) => (
-        <div class="thumb" data-index={index}>
-          <img src={photo.src} width={photo.width} height={photo.height} alt="" loading="lazy" />
+      <!-- HEADER -->
+   <header class="header">
+        <img src="/PLATE5.png" alt="PLATES" class="site-title-img" />
+        <button id="infoBtn" aria-label="Info" class="info-btn-under-title">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+        </button>
+      </header>
+
+      <!-- GALLERY LAYOUT -->
+      <div class="gallery-layout" id="grid">
+        <div class="main-stage">
+          <img id="mainImg" src={photos[0]?.src} alt="" />
         </div>
-      ))}
-    </div>
-
-    <!-- LIGHTBOX -->
-    <div class="lightbox" id="lightbox">
-      <div class="lightbox-stage">
-        <img id="lightboxImg" src="" alt="" />
+        <div class="thumb-rail" id="thumbRail">
+          {photos.map((photo, index) => (
+            <div class="thumb" data-index={index} data-src={photo.src}>
+              <img src={photo.src} alt="" loading="lazy" />
+            </div>
+          ))}
+        </div>
       </div>
-      <div class="lightbox-nav">
-        <button class="nav-arrow" id="prevBtn" aria-label="Previous">
-          <svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8" stroke="black" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <button class="nav-arrow" id="nextBtn" aria-label="Next">
-          <svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8" stroke="black" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </div>
-    </div>
 
-    <!-- BOTTOM BAR — info icon -->
-    <div class="bottom-bar">
-      <button id="infoBtn" aria-label="Info">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-        </svg>
-      </button>
     </div>
 
     <!-- INFO POPUP — Mac-style window -->
@@ -83,9 +75,9 @@ const photos = galleryDoc.photos;
         </div>
         <div class="mac-content">
           <h1>P L A T E 5.</h1>
-          <p>A collection of license plates by Ollie Adegboye</p>
+          <p>Good plates.</p>
           <div class="socials">
-            <a href="https://instagram.com/ollie.ade" target="_blank" aria-label="Instagram">
+            <a href="https://instagram.com" target="_blank" aria-label="Instagram">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="#f0f0ec" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
               </svg>
@@ -108,45 +100,80 @@ const photos = galleryDoc.photos;
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* ── SITE TITLE ── */
- .site-title-img {
-     display: block;
-     margin: 64px auto 40px;
-     max-width: 200px;
-     height: auto;
-   }
-
-  /* ── GRID ── */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-    gap: 9px;
-    padding: 0 300px 100px;
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
   }
 
-  .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-  gap: 9px;
-  padding: 0 300px 100px;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
+  .page-container.visible {
+    opacity: 1;
+  }
 
-.grid.visible {
-  opacity: 1;
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 64px 0 60px;
+  }
+
+  .site-title-img {
+    display: block;
+    max-width: 100px;
+    height: auto;
+  }
+
+  /* ── GALLERY LAYOUT ── */
+  .gallery-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+    padding-bottom: 100px;
+  }
+
+  .main-stage {
+    max-width: 900px;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .main-stage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+.thumb-rail {
+  width: 676px;
+  max-width: 100%;
+  max-height: 166px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(10, 30px);
+  gap: 4px;
+  justify-content: center;
+  margin: 0 auto;
 }
 
 @media (max-width: 600px) {
-  .grid {
-    grid-template-columns: repeat(4, 1fr);
-    padding: 0 12px 100px;
-    gap: 4px;
+  .thumb-rail {
+    grid-template-columns: repeat(8, 30px);
   }
 }
-
   .thumb {
-    aspect-ratio: 16 / 9;
+    width: 30px;
+    height: 30px;
     overflow: hidden;
     cursor: pointer;
     background: #111;
@@ -157,97 +184,31 @@ const photos = galleryDoc.photos;
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: opacity 0.15s;
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
-  .thumb:hover img {
-    opacity: 0.8;
+  .thumb img.loaded {
+    opacity: 1;
   }
 
-  /* ── LIGHTBOX ── */
-  .lightbox {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.9);
-    z-index: 30;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 24px;
-  }
+.info-btn-under-title {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fde910;
+  margin-top: 16px;
+}
 
-  .lightbox.open {
-    display: flex;
-  }
-
-  .lightbox-stage {
-    width: min(80vw, 960px);
-    aspect-ratio: 16 / 9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .lightbox-stage img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-  }
-
-  .lightbox-nav {
-    display: flex;
-    gap: 24px;
-  }
-
-  .nav-arrow {
-    position: static;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #fde910;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .nav-arrow svg {
-    width: 8px;
-    height: 8px;
-  }
-
-  /* ── BOTTOM BAR ── */
-  .bottom-bar {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 64px;
-    background: #0a0a0a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-  }
-
-  .bottom-bar button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fde910;
-  }
-
-  .bottom-bar svg {
-    width: 30px;
-    height: 30px;
-    fill: currentColor;
-  }
+.info-btn-under-title svg {
+  width: 10px;
+  height: 10px;
+  fill: currentColor;
+}
 
   /* ── INFO OVERLAY (backdrop) ── */
   .info-overlay {
@@ -428,17 +389,18 @@ const photos = galleryDoc.photos;
   const pwInput   = document.getElementById('pwInput');
   const gateError = document.getElementById('gateError');
   const enterBtn  = document.getElementById('enterBtn');
+  const pageContainer = document.querySelector('.page-container');
 
-if (sessionStorage.getItem('unlocked') === 'yes') {
-  gate.classList.add('hidden');
-  document.getElementById('grid').classList.add('visible');
-}
+  if (sessionStorage.getItem('unlocked') === 'yes') {
+    gate.classList.add('hidden');
+    pageContainer.classList.add('visible');
+  }
 
   function checkPassword() {
     if (pwInput.value === PASSWORD) {
       sessionStorage.setItem('unlocked', 'yes');
       gate.classList.add('hidden');
-      document.getElementById('grid').classList.add('visible');
+      pageContainer.classList.add('visible');
       pwInput.value = '';
     } else {
       pwInput.classList.add('error');
@@ -455,65 +417,42 @@ if (sessionStorage.getItem('unlocked') === 'yes') {
     if (e.key === 'Enter') checkPassword();
   });
 
-  document.addEventListener('contextmenu', (e) => e.preventDefault());
-
   enterBtn.addEventListener('click', checkPassword);
 
-  /* ── GRID + LIGHTBOX ── */
-  const thumbs      = Array.from(document.querySelectorAll('.thumb'));
-  const lightbox     = document.getElementById('lightbox');
-  const lightboxImg  = document.getElementById('lightboxImg');
-  const prevBtn      = document.getElementById('prevBtn');
-  const nextBtn       = document.getElementById('nextBtn');
+  /* ── IMAGE FADE-IN ── */
+  document.querySelectorAll('.thumb img').forEach((img) => {
+    if (img.complete) {
+      img.classList.add('loaded');
+    } else {
+      img.addEventListener('load', () => img.classList.add('loaded'));
+    }
+  });
 
-  const sources = thumbs.map(t => t.querySelector('img').src);
-  let current = 0;
+  /* ── MAIN IMAGE + THUMB RAIL ── */
+  const mainImg = document.getElementById('mainImg');
+  const thumbs  = Array.from(document.querySelectorAll('.thumb'));
+  let currentIndex = 0;
 
-  function openLightbox(index) {
-    current = index;
-    lightboxImg.src = sources[current];
-    lightbox.classList.add('open');
+  function setMain(index) {
+    currentIndex = index;
+    mainImg.src = thumbs[index].dataset.src;
   }
 
-  function closeLightbox() {
-    lightbox.classList.remove('open');
-  }
-
-  function showNext() {
-    current = (current + 1) % sources.length;
-    lightboxImg.src = sources[current];
-  }
-
-  function showPrev() {
-    current = (current - 1 + sources.length) % sources.length;
-    lightboxImg.src = sources[current];
-  }
+  const isTouch = window.matchMedia('(hover: none)').matches;
 
   thumbs.forEach((thumb) => {
-    thumb.addEventListener('click', () => {
-      openLightbox(Number(thumb.dataset.index));
-    });
+    const index = Number(thumb.dataset.index);
+    if (!isTouch) {
+      thumb.addEventListener('mouseenter', () => setMain(index));
+    } else {
+      thumb.addEventListener('click', () => setMain(index));
+    }
   });
 
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) closeLightbox();
-  });
-
-  prevBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    showPrev();
-  });
-
-  nextBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    showNext();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (!lightbox.classList.contains('open')) return;
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowRight') showNext();
-    if (e.key === 'ArrowLeft') showPrev();
+  /* click/tap main image to advance */
+  document.querySelector('.main-stage').addEventListener('click', () => {
+    const next = (currentIndex + 1) % thumbs.length;
+    setMain(next);
   });
 
   /* ── INFO POPUP ── */
@@ -534,11 +473,5 @@ if (sessionStorage.getItem('unlocked') === 'yes') {
     if (e.target === infoOverlay) infoOverlay.classList.remove('open');
   });
 
-  document.querySelectorAll('.thumb img').forEach((img) => {
-  if (img.complete) {
-    img.classList.add('loaded');
-  } else {
-    img.addEventListener('load', () => img.classList.add('loaded'));
-  }
-});
+  document.addEventListener('contextmenu', (e) => e.preventDefault());
 </script>
