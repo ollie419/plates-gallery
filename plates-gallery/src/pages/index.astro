@@ -27,7 +27,7 @@ const photos = galleryDoc.photos;
         <input
           type="password"
           id="pwInput"
-          placeholder="enter password"
+          placeholder="password"
           autocomplete="off"
           autocorrect="off"
           autocapitalize="off"
@@ -333,35 +333,37 @@ const photos = galleryDoc.photos;
     width: min(300px, calc(100vw - 48px));
   }
 
-  .gate-box input {
-    width: 100%;
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
-    border-radius: 6px;
-    padding: 12px 16px;
-    font-family: 'DM Mono', 'Courier New', monospace;
-    font-size: 14px;
-    color: #f0f0ec;
-    text-align: center;
-    letter-spacing: 0.1em;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+ .gate-box input {
+  width: 50%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f0f0ec;
+  border-radius: 0;
+  padding: 12px 0;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 14px;
+  color: #f0f0ec;
+  text-align: center;
+  letter-spacing: 0.1em;
+  outline: none;
+  transition: border-color 0.2s;
+}
 
   .gate-box input:focus { border-color: #555; }
 
-  .gate-box button {
-    width: 100%;
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
-    border-radius: 6px;
-    padding: 10px 16px;
-    font-family: 'DM Mono', 'Courier New', monospace;
-    font-size: 13px;
-    color: #f0f0ec;
-    cursor: pointer;
-    transition: border-color 0.2s;
-  }
+.gate-box button {
+  width: auto;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f0f0ec;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
 
   .gate-box button:hover {
     border-color: #555;
