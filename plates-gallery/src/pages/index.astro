@@ -11,6 +11,7 @@ const galleryDoc = await sanityClient.fetch(`
   }
 `);
 const photos = galleryDoc.photos;
+const photoUrls = photos.map(p => p.src);
 ---
 
 <html>
@@ -23,8 +24,12 @@ const photos = galleryDoc.photos;
 
     <!-- PASSWORD GATE -->
     <div class="gate" id="gate">
-      <div class="gate-box">
-        <input
+           <div class="gate-box">
+           <div class="roulette-box" id="rouletteBox">
+         <img id="rouletteImg" src="" alt="" />
+          <button id="spinBtn" class="spin-btn">SPIN</button>
+        </div>
+          <input
           type="password"
           id="pwInput"
           placeholder="password"
@@ -32,8 +37,10 @@ const photos = galleryDoc.photos;
           autocorrect="off"
           autocapitalize="off"
         >
-        <button id="enterBtn">Enter</button>
-        <div class="gate-error" id="gateError">incorrect password</div>
+        <div class="gate-feedback">
+          <button id="enterBtn" aria-label="Enter">→</button>
+          <span class="gate-error" id="gateError">X</span>
+        </div>
       </div>
     </div>
 
@@ -86,7 +93,9 @@ const photos = galleryDoc.photos;
         </div>
       </div>
     </div>
-
+<script define:vars={{ photoUrls }}>
+  window.__photoUrls = photoUrls;
+</script>
   </body>
 </html>
 
@@ -334,7 +343,7 @@ const photos = galleryDoc.photos;
   }
 
  .gate-box input {
-  width: 50%;
+  width: 100px;
   background: none;
   border: none;
   border-bottom: 1px solid #f0f0ec;
@@ -357,7 +366,7 @@ const photos = galleryDoc.photos;
   border: none;
   padding: 8px 0;
   font-family: 'DM Mono', 'Courier New', monospace;
-  font-size: 13px;
+  font-size: 30px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #f0f0ec;
@@ -381,6 +390,71 @@ const photos = galleryDoc.photos;
   }
 
   .gate-error.show { opacity: 1; }
+
+.roulette-box {
+  width: 480px;
+  aspect-ratio: 16 / 9;
+  background: #0a0a0a;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.roulette-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: transparent;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.roulette-box img.active {
+  opacity: 1;
+}
+
+.gate-box .spin-btn {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: none;
+  border: none;
+  padding: 8px 0;
+  margin-bottom: 2px;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 30px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fde910;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  z-index: 5;
+}
+
+.spin-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.gate-feedback {
+  position: relative;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gate-error {
+  position: absolute;
+}
+
+.hidden-during-error {
+  display: none;
+}
+
 </style>
 
 <script>
@@ -398,7 +472,7 @@ const photos = galleryDoc.photos;
     pageContainer.classList.add('visible');
   }
 
-  function checkPassword() {
+function checkPassword() {
     if (pwInput.value === PASSWORD) {
       sessionStorage.setItem('unlocked', 'yes');
       gate.classList.add('hidden');
@@ -407,10 +481,12 @@ const photos = galleryDoc.photos;
     } else {
       pwInput.classList.add('error');
       gateError.classList.add('show');
+      enterBtn.classList.add('hidden-during-error');
       pwInput.value = '';
       setTimeout(() => {
         pwInput.classList.remove('error');
         gateError.classList.remove('show');
+        enterBtn.classList.remove('hidden-during-error');
       }, 1800);
     }
   }
@@ -429,6 +505,71 @@ const photos = galleryDoc.photos;
       img.addEventListener('load', () => img.classList.add('loaded'));
     }
   });
+
+  /* ── ROULETTE ── */
+const spinBtn = document.getElementById('spinBtn');
+const rouletteBox = document.getElementById('rouletteBox');
+const rouletteImg = document.getElementById('rouletteImg');
+const MAX_SPINS = 100;
+const COOLDOWN_MS = 60 * 60 * 1000;
+
+function getGalleryImages() {
+  return window.__photoUrls;
+}
+
+function getSpinState() {
+  const raw = localStorage.getItem('rouletteState');
+  if (!raw) return { count: 0, lockedUntil: 0 };
+  return JSON.parse(raw);
+}
+
+function setSpinState(state) {
+  localStorage.setItem('rouletteState', JSON.stringify(state));
+}
+
+function updateSpinButton() {
+  const state = getSpinState();
+  const now = Date.now();
+  if (state.lockedUntil > now) {
+    spinBtn.style.display = 'none';
+    return;
+  }
+  if (state.count >= MAX_SPINS) {
+    setSpinState({ count: 0, lockedUntil: now + COOLDOWN_MS });
+    spinBtn.style.display = 'none';
+    return;
+  }
+  spinBtn.style.display = 'inline-block';
+}
+
+spinBtn.addEventListener('click', () => {
+  const state = getSpinState();
+  const now = Date.now();
+  if (state.lockedUntil > now || state.count >= MAX_SPINS) return;
+
+  const images = getGalleryImages();
+  if (!images || images.length === 0) return;
+
+  spinBtn.disabled = true;
+  rouletteImg.classList.add('active');
+
+  let ticks = 0;
+  const totalTicks = 20;
+  const interval = setInterval(() => {
+    const random = images[Math.floor(Math.random() * images.length)];
+    rouletteImg.src = random;
+    ticks++;
+    if (ticks >= totalTicks) {
+      clearInterval(interval);
+      spinBtn.disabled = false;
+      const newState = { count: state.count + 1, lockedUntil: 0 };
+      setSpinState(newState);
+      updateSpinButton();
+    }
+  }, 80);
+});
+
+updateSpinButton();
 
   /* ── MAIN IMAGE + THUMB RAIL ── */
   const mainImg = document.getElementById('mainImg');
