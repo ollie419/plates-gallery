@@ -1,0 +1,653 @@
+---
+import { sanityClient } from './lib/sanity';
+
+const galleryDoc = await sanityClient.fetch(`
+  *[_type == "gallery"][0] {
+    "photos": images[] {
+      "src": asset->url,
+      "width": asset->metadata.dimensions.width,
+      "height": asset->metadata.dimensions.height
+    }
+  }
+`);
+const photos = galleryDoc.photos;
+const photoUrls = photos.map(p => p.src);
+---
+
+<html>
+  <head>
+    <title>Plates Gallery</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid&display=swap" rel="stylesheet">
+  </head>
+  <body>
+
+    <!-- PASSWORD GATE -->
+    <div class="gate" id="gate">
+           <div class="gate-box">
+        <div class="roulette-wrap">
+          <div class="roulette-box" id="rouletteBox">
+            <img id="rouletteImg" src="" alt="" />
+          </div>
+          <button id="spinBtn" class="spin-btn" aria-label="Spin"></button>
+          <div class="spin-caption" id="spinCaption">CLICK TO SPIN</div>
+        </div>
+        <div class="gate-bottom">
+          <input
+          type="password"
+          id="pwInput"
+          placeholder="password"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+        >
+          <div class="gate-feedback">
+            <button id="enterBtn" aria-label="Enter">→</button>
+            <span class="gate-error" id="gateError">X</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-container">
+
+      <!-- HEADER -->
+   <header class="header">
+        <div class="logo-row">
+          <img src="/PLATE5.png" alt="PLATES" class="site-title-img" />
+          <button id="infoBtn" aria-label="Info" class="info-btn-under-title">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- GALLERY LAYOUT -->
+      <div class="gallery-layout" id="grid">
+        <div class="main-stage">
+          <img id="mainImg" src={photos[0]?.src} alt="" />
+        </div>
+        <div class="thumb-rail" id="thumbRail">
+          {photos.map((photo, index) => (
+            <div class="thumb" data-index={index} data-src={photo.src}>
+              <img src={photo.src} alt="" loading="lazy" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- INFO SCREEN — full yellow -->
+    <div class="info-overlay" id="infoOverlay">
+      <button class="info-close" id="closeBtn" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="square" xmlns="http://www.w3.org/2000/svg">
+          <line x1="4" y1="4" x2="20" y2="20"/>
+          <line x1="20" y1="4" x2="4" y2="20"/>
+        </svg>
+      </button>
+      <div class="info-content">
+        <h1>P L A T E 5.</h1>
+        <p>Good plates.</p>
+        <div class="socials">
+          <a href="https://instagram.com/ollie______a" target="_blank" aria-label="Instagram">
+            <svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+<script define:vars={{ photoUrls }}>
+  window.__photoUrls = photoUrls;
+</script>
+  </body>
+</html>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .page-container.visible {
+    opacity: 1;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 64px 0 60px;
+  }
+
+  .site-title-img {
+    display: block;
+    max-width: 100px;
+    height: auto;
+  }
+
+  /* ── GALLERY LAYOUT ── */
+  .gallery-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+    padding-bottom: 100px;
+  }
+
+  .main-stage {
+    max-width: 500px;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .main-stage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+.thumb-rail {
+  width: 676px;
+  max-width: 100%;
+  max-height: 166px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(10, 30px);
+  gap: 4px;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+@media (max-width: 600px) {
+  .thumb-rail {
+    grid-template-columns: repeat(8, 30px);
+  }
+}
+  .thumb {
+    width: 30px;
+    height: 30px;
+    overflow: hidden;
+    cursor: pointer;
+    background: #111;
+  }
+
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .thumb img.loaded {
+    opacity: 1;
+  }
+
+.info-btn-under-title {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fde910;
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 8px;
+}
+
+.logo-row {
+  position: relative;
+}
+
+.info-btn-under-title svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+
+  /* ── INFO OVERLAY (full screen) ── */
+  .info-overlay {
+    position: fixed;
+    inset: 0;
+    background: #fde910;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .info-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .info-close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    color: #000;
+  }
+
+  .info-close svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+  }
+
+  .info-content {
+    width: min(480px, calc(100vw - 40px));
+    padding: 28px 32px 36px;
+  }
+
+  .info-content h1 {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    color: #000;
+  }
+
+  .info-content p {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.85;
+    color: #000;
+  }
+
+  .socials {
+    display: flex;
+    gap: 20px;
+    margin-top: 28px;
+  }
+
+  .socials a {
+    display: inline-flex;
+    align-items: center;
+    transition: opacity 0.2s;
+  }
+
+  .socials a:hover { opacity: 0.6; }
+
+  .socials svg { fill: #000; }
+
+  /* ── PASSWORD GATE ── */
+  .gate {
+    position: fixed;
+    inset: 0;
+    background: #0a0a0a;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .gate.hidden { display: none; }
+
+  .gate-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: min(300px, calc(100vw - 48px));
+  }
+
+ .gate-box input {
+  width: 100px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f0f0ec;
+  border-radius: 0;
+  padding: 12px 0;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 14px;
+  color: #f0f0ec;
+  text-align: center;
+  letter-spacing: 0.1em;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+  .gate-bottom {
+    position: fixed;
+    bottom: 100px;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .gate-box input:focus { border-color: #555; }
+
+.gate-box button {
+  width: auto;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 30px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f0f0ec;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+  .gate-box button:hover {
+    border-color: #555;
+  }
+
+  .gate-box input.error { border-color: #ff5f57; }
+
+  .gate-error {
+    font-family: 'DM Mono', 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: #ff5f57;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .gate-error.show { opacity: 1; }
+
+.roulette-wrap {
+  position: relative;
+  width: min(600px, 90vw);
+}
+
+.roulette-box {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0a0a0a;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.roulette-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: transparent;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.roulette-box img.active {
+  opacity: 1;
+}
+
+.gate-box .spin-btn {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #fde910;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  z-index: 5;
+}
+
+.gate-box .spin-btn::after {
+  content: '';
+  position: absolute;
+  inset: -12px;
+}
+
+.spin-caption {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(400px, 90vw);
+  text-align: center;
+  line-height: 1;
+  margin-top: 12px;
+  padding: 8px 0;
+  font-family: 'Londrina Solid', 'Courier New', cursive;
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fde910;
+  pointer-events: none; 
+}
+
+.spin-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.gate-feedback {
+  position: relative;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gate-error {
+  position: absolute;
+}
+
+.hidden-during-error {
+  display: none;
+}
+
+</style>
+
+<script>
+  /* ── PASSWORD GATE ── */
+  const PASSWORD = '101';
+
+  const gate      = document.getElementById('gate');
+  const pwInput   = document.getElementById('pwInput');
+  const gateError = document.getElementById('gateError');
+  const enterBtn  = document.getElementById('enterBtn');
+  const pageContainer = document.querySelector('.page-container');
+
+  if (sessionStorage.getItem('unlocked') === 'yes') {
+    gate.classList.add('hidden');
+    pageContainer.classList.add('visible');
+  }
+
+function checkPassword() {
+    if (pwInput.value === PASSWORD) {
+      sessionStorage.setItem('unlocked', 'yes');
+      gate.classList.add('hidden');
+      pageContainer.classList.add('visible');
+      pwInput.value = '';
+    } else {
+      pwInput.classList.add('error');
+      gateError.classList.add('show');
+      enterBtn.classList.add('hidden-during-error');
+      pwInput.value = '';
+      setTimeout(() => {
+        pwInput.classList.remove('error');
+        gateError.classList.remove('show');
+        enterBtn.classList.remove('hidden-during-error');
+      }, 1800);
+    }
+  }
+
+  pwInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') checkPassword();
+  });
+
+  enterBtn.addEventListener('click', checkPassword);
+
+  /* ── IMAGE FADE-IN ── */
+  document.querySelectorAll('.thumb img').forEach((img) => {
+    if (img.complete) {
+      img.classList.add('loaded');
+    } else {
+      img.addEventListener('load', () => img.classList.add('loaded'));
+    }
+  });
+
+  /* ── ROULETTE ── */
+const spinBtn = document.getElementById('spinBtn');
+const spinCaption = document.getElementById('spinCaption');
+const rouletteBox = document.getElementById('rouletteBox');
+const rouletteImg = document.getElementById('rouletteImg');
+const MAX_SPINS = 10;
+const COOLDOWN_MS = 60 * 60 * 1000;
+
+function getGalleryImages() {
+  return window.__photoUrls;
+}
+
+function getSpinState() {
+  const raw = localStorage.getItem('rouletteState');
+  if (!raw) return { count: 0, lockedUntil: 0 };
+  return JSON.parse(raw);
+}
+
+function setSpinState(state) {
+  localStorage.setItem('rouletteState', JSON.stringify(state));
+} 
+
+function updateSpinButton() {
+  const state = getSpinState();
+  const now = Date.now();
+  if (state.lockedUntil > now) {
+    spinBtn.style.display = 'none';
+    spinCaption.style.display = 'none';
+    return;
+  }
+  if (state.count >= MAX_SPINS) {
+    setSpinState({ count: 0, lockedUntil: now + COOLDOWN_MS });
+    spinBtn.style.display = 'none';
+    spinCaption.style.display = 'none';
+    return;
+  }
+  spinBtn.style.display = 'block';
+  spinCaption.style.display = 'block';
+}
+
+spinBtn.addEventListener('click', () => {
+  const state = getSpinState();
+  const now = Date.now();
+  if (state.lockedUntil > now || state.count >= MAX_SPINS) return;
+
+  const images = getGalleryImages();
+  if (!images || images.length === 0) return;
+
+  spinBtn.disabled = true;
+  rouletteImg.classList.add('active');
+
+  let ticks = 0;
+  const totalTicks = 20;
+  const interval = setInterval(() => {
+    const random = images[Math.floor(Math.random() * images.length)];
+    rouletteImg.src = random;
+    ticks++;
+    if (ticks >= totalTicks) {
+      clearInterval(interval);
+      spinBtn.disabled = false;
+      const newState = { count: state.count + 1, lockedUntil: 0 };
+      setSpinState(newState);
+      updateSpinButton();
+    }
+  }, 80);
+});
+
+updateSpinButton();
+
+  /* ── MAIN IMAGE + THUMB RAIL ── */
+  const mainImg = document.getElementById('mainImg');
+  const thumbs  = Array.from(document.querySelectorAll('.thumb'));
+  let currentIndex = 0;
+
+  function setMain(index) {
+    currentIndex = index;
+    mainImg.src = thumbs[index].dataset.src;
+  }
+
+  const isTouch = window.matchMedia('(hover: none)').matches;
+
+  thumbs.forEach((thumb) => {
+    const index = Number(thumb.dataset.index);
+    if (!isTouch) {
+      thumb.addEventListener('mouseenter', () => setMain(index));
+    } else {
+      thumb.addEventListener('click', () => setMain(index));
+    }
+  });
+
+  /* click/tap main image to advance */
+  document.querySelector('.main-stage').addEventListener('click', () => {
+    const next = (currentIndex + 1) % thumbs.length;
+    setMain(next);
+  });
+
+  /* ── INFO POPUP ── */
+  const infoBtn     = document.getElementById('infoBtn');
+  const infoOverlay = document.getElementById('infoOverlay');
+  const closeBtn    = document.getElementById('closeBtn');
+
+  infoBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    infoOverlay.classList.add('open');
+  });
+
+  closeBtn.addEventListener('click', () => {
+    infoOverlay.classList.remove('open');
+  });
+
+  infoOverlay.addEventListener('click', (e) => {
+    if (e.target === infoOverlay) infoOverlay.classList.remove('open');
+  });
+
+  document.addEventListener('contextmenu', (e) => e.preventDefault());
+</script>

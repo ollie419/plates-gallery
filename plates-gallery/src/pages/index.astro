@@ -19,16 +19,23 @@ const photoUrls = photos.map(p => p.src);
     <title>Plates Gallery</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid&display=swap" rel="stylesheet">
   </head>
   <body>
 
     <!-- PASSWORD GATE -->
     <div class="gate" id="gate">
            <div class="gate-box">
-           <div class="roulette-box" id="rouletteBox">
-         <img id="rouletteImg" src="" alt="" />
-          <button id="spinBtn" class="spin-btn">SPIN</button>
+        <div class="roulette-wrap">
+          <div class="roulette-box" id="rouletteBox">
+            <div class="reel" id="reel"></div>
+          </div>
+          <button id="spinBtn" class="spin-btn" aria-label="Spin"></button>
+          <div class="spin-caption" id="spinCaption">CLICK TO SPIN</div>
         </div>
+        <div class="gate-bottom">
           <input
           type="password"
           id="pwInput"
@@ -37,9 +44,10 @@ const photoUrls = photos.map(p => p.src);
           autocorrect="off"
           autocapitalize="off"
         >
-        <div class="gate-feedback">
-          <button id="enterBtn" aria-label="Enter">→</button>
-          <span class="gate-error" id="gateError">X</span>
+          <div class="gate-feedback">
+            <button id="enterBtn" aria-label="Enter">→</button>
+            <span class="gate-error" id="gateError">X</span>
+          </div>
         </div>
       </div>
     </div>
@@ -48,12 +56,14 @@ const photoUrls = photos.map(p => p.src);
 
       <!-- HEADER -->
    <header class="header">
-        <img src="/PLATE5.png" alt="PLATES" class="site-title-img" />
-        <button id="infoBtn" aria-label="Info" class="info-btn-under-title">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-          </svg>
-        </button>
+        <div class="logo-row">
+          <img src="/PLATE5.png" alt="PLATES" class="site-title-img" />
+          <button id="infoBtn" aria-label="Info" class="info-btn-under-title">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+          </button>
+        </div>
       </header>
 
       <!-- GALLERY LAYOUT -->
@@ -72,24 +82,23 @@ const photoUrls = photos.map(p => p.src);
 
     </div>
 
-    <!-- INFO POPUP — Mac-style window -->
+    <!-- INFO SCREEN — full yellow -->
     <div class="info-overlay" id="infoOverlay">
-      <div class="mac-window">
-        <div class="mac-titlebar">
-          <button class="mac-btn red"    id="closeBtn" aria-label="Close"></button>
-          <button class="mac-btn yellow" aria-label="Minimise" onclick="return false"></button>
-          <button class="mac-btn green"  aria-label="Expand"   onclick="return false"></button>
-        </div>
-        <div class="mac-content">
-          <h1>P L A T E 5.</h1>
-          <p>Good plates.</p>
-          <div class="socials">
-            <a href="https://instagram.com/ollie.ade" target="_blank" aria-label="Instagram">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="#f0f0ec" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-              </svg>
-            </a>
-          </div>
+      <button class="info-close" id="closeBtn" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="square" xmlns="http://www.w3.org/2000/svg">
+          <line x1="4" y1="4" x2="20" y2="20"/>
+          <line x1="20" y1="4" x2="4" y2="20"/>
+        </svg>
+      </button>
+      <div class="info-content">
+        <h1>P L A T E 5.</h1>
+        <p>Good plates.</p>
+        <div class="socials">
+          <a href="https://instagram.com/ollie______a" target="_blank" aria-label="Instagram">
+            <svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+            </svg>
+          </a>
         </div>
       </div>
     </div>
@@ -210,20 +219,28 @@ const photoUrls = photos.map(p => p.src);
   align-items: center;
   justify-content: center;
   color: #fde910;
-  margin-top: 16px;
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 8px;
+}
+
+.logo-row {
+  position: relative;
 }
 
 .info-btn-under-title svg {
-  width: 10px;
-  height: 10px;
+  width: 15px;
+  height: 15px;
   fill: currentColor;
 }
 
-  /* ── INFO OVERLAY (backdrop) ── */
+  /* ── INFO OVERLAY (full screen) ── */
   .info-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.55);
+    background: #fde910;
     z-index: 40;
     display: flex;
     align-items: center;
@@ -238,70 +255,44 @@ const photoUrls = photos.map(p => p.src);
     pointer-events: all;
   }
 
-  /* ── MAC WINDOW ── */
-  .mac-window {
-    width: min(480px, calc(100vw - 40px));
-    background: #1e1e1e;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.7);
-  }
-
-  .mac-titlebar {
-    background: #2c2c2c;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border-bottom: 1px solid #111;
-  }
-
-  .mac-btn {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
+  .info-close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    background: none;
     border: none;
     cursor: pointer;
-    flex-shrink: 0;
-    position: relative;
-  }
-
-  .mac-btn.red   { background: #ff5f57; }
-  .mac-btn.yellow { background: #febc2e; }
-  .mac-btn.green  { background: #28c840; }
-
-  .mac-btn.red:hover::after {
-    content: '×';
-    position: absolute;
-    inset: 0;
+    padding: 8px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    font-weight: 700;
-    color: rgba(0,0,0,0.5);
-    line-height: 12px;
+    color: #000;
   }
 
-  .mac-content {
+  .info-close svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+  }
+
+  .info-content {
+    width: min(480px, calc(100vw - 40px));
     padding: 28px 32px 36px;
   }
 
-  .mac-content h1 {
+  .info-content h1 {
     font-family: Helvetica, Arial, sans-serif;
     font-size: 28px;
     font-weight: 400;
     letter-spacing: -0.02em;
     line-height: 1.1;
     margin-bottom: 16px;
-    color: #f0f0ec;
+    color: #000;
   }
 
-  .mac-content p {
+  .info-content p {
     font-family: Helvetica, Arial, sans-serif;
     font-size: 13px;
     line-height: 1.85;
-    color: #666;
+    color: #000;
   }
 
   .socials {
@@ -313,11 +304,12 @@ const photoUrls = photos.map(p => p.src);
   .socials a {
     display: inline-flex;
     align-items: center;
-    opacity: 0.6;
     transition: opacity 0.2s;
   }
 
-  .socials a:hover { opacity: 1; }
+  .socials a:hover { opacity: 0.6; }
+
+  .socials svg { fill: #000; }
 
   /* ── PASSWORD GATE ── */
   .gate {
@@ -358,6 +350,17 @@ const photoUrls = photos.map(p => p.src);
   transition: border-color 0.2s;
 }
 
+  .gate-bottom {
+    position: fixed;
+    bottom: 100px;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
   .gate-box input:focus { border-color: #555; }
 
 .gate-box button {
@@ -391,8 +394,13 @@ const photoUrls = photos.map(p => p.src);
 
   .gate-error.show { opacity: 1; }
 
+.roulette-wrap {
+  position: relative;
+  width: min(600px, 90vw);
+}
+
 .roulette-box {
-  width: 400px;
+  width: 100%;
   aspect-ratio: 16 / 9;
   background: #0a0a0a;
   overflow: hidden;
@@ -402,36 +410,58 @@ const photoUrls = photos.map(p => p.src);
   position: relative;
 }
 
-.roulette-box img {
+.reel {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  background: transparent;
-  opacity: 0;
-  transition: opacity 0.2s;
+  will-change: transform, filter;
 }
 
-.roulette-box img.active {
-  opacity: 1;
+.reel :global(.frame) {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0a0a0a center / cover no-repeat;
 }
 
 .gate-box .spin-btn {
   position: absolute;
-  bottom: 12px;
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
-  background: none;
+  width: 10px;
+  height: 10px;
+  padding: 0;
   border: none;
-  padding: 8px 0;
-  margin-bottom: 2px;
-  font-family: 'DM Mono', 'Courier New', monospace;
-  font-size: 30px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #fde910;
+  border-radius: 50%;
+  background: #fde910;
   cursor: pointer;
   transition: opacity 0.2s;
   z-index: 5;
+}
+
+.gate-box .spin-btn::after {
+  content: '';
+  position: absolute;
+  inset: -12px;
+}
+
+.spin-caption {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(400px, 90vw);
+  text-align: center;
+  line-height: 1;
+  margin-top: 12px;
+  padding: 8px 0;
+  font-family: 'Londrina Solid', 'Courier New', cursive;
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fde910;
+  pointer-events: none; 
 }
 
 .spin-btn:disabled {
@@ -508,9 +538,10 @@ function checkPassword() {
 
   /* ── ROULETTE ── */
 const spinBtn = document.getElementById('spinBtn');
+const spinCaption = document.getElementById('spinCaption');
 const rouletteBox = document.getElementById('rouletteBox');
-const rouletteImg = document.getElementById('rouletteImg');
-const MAX_SPINS = 100;
+const reel = document.getElementById('reel');
+const MAX_SPINS = 10;
 const COOLDOWN_MS = 60 * 60 * 1000;
 
 function getGalleryImages() {
@@ -532,14 +563,74 @@ function updateSpinButton() {
   const now = Date.now();
   if (state.lockedUntil > now) {
     spinBtn.style.display = 'none';
+    spinCaption.style.display = 'none';
     return;
   }
   if (state.count >= MAX_SPINS) {
     setSpinState({ count: 0, lockedUntil: now + COOLDOWN_MS });
     spinBtn.style.display = 'none';
+    spinCaption.style.display = 'none';
     return;
   }
-  spinBtn.style.display = 'inline-block';
+  spinBtn.style.display = 'block';
+  spinCaption.style.display = 'block';
+}
+
+const REEL_FRAMES = 24;
+const REEL_MS = 3000;
+let reelLast = null;
+
+function makeFrame(src) {
+  const f = document.createElement('div');
+  f.className = 'frame';
+  if (src) f.style.backgroundImage = 'url("' + src + '")';
+  return f;
+}
+
+function preload(urls) {
+  const loads = urls.map((u) => new Promise((res) => {
+    const i = new Image();
+    i.onload = i.onerror = res;
+    i.src = u;
+  }));
+  return Promise.race([Promise.all(loads), new Promise((res) => setTimeout(res, 2500))]);
+}
+
+function spinReel(images, done) {
+  const strip = [reelLast];
+  for (let i = 1; i < REEL_FRAMES; i++) {
+    let pick;
+    do {
+      pick = images[Math.floor(Math.random() * images.length)];
+    } while (images.length > 1 && pick === strip[i - 1]);
+    strip.push(pick);
+  }
+  const final = strip[strip.length - 1];
+
+  preload(Array.from(new Set(strip.filter(Boolean)))).then(() => {
+    reel.style.transition = 'none';
+    reel.style.transform = 'translateY(0)';
+    reel.style.filter = 'blur(4px)';
+    reel.replaceChildren(...strip.map(makeFrame));
+    reel.getBoundingClientRect(); // force layout so the transition starts from the top
+
+    reel.style.transition =
+      'transform ' + REEL_MS + 'ms cubic-bezier(0.1, 0.6, 0.15, 1), filter ' + REEL_MS + 'ms ease-in';
+    reel.style.filter = 'blur(0px)';
+    reel.style.transform = 'translateY(-' + ((REEL_FRAMES - 1) / REEL_FRAMES) * 100 + '%)';
+
+    const finish = (e) => {
+      if (e.propertyName !== 'transform') return;
+      reel.removeEventListener('transitionend', finish);
+      reelLast = final;
+      reel.style.transition = 'none';
+      reel.style.transform = 'translateY(0)';
+      reel.style.filter = 'none';
+      reel.replaceChildren(makeFrame(final));
+      done();
+    };
+    reel.addEventListener('transitionend', finish);
+  });
 }
 
 spinBtn.addEventListener('click', () => {
@@ -551,22 +642,11 @@ spinBtn.addEventListener('click', () => {
   if (!images || images.length === 0) return;
 
   spinBtn.disabled = true;
-  rouletteImg.classList.add('active');
-
-  let ticks = 0;
-  const totalTicks = 20;
-  const interval = setInterval(() => {
-    const random = images[Math.floor(Math.random() * images.length)];
-    rouletteImg.src = random;
-    ticks++;
-    if (ticks >= totalTicks) {
-      clearInterval(interval);
-      spinBtn.disabled = false;
-      const newState = { count: state.count + 1, lockedUntil: 0 };
-      setSpinState(newState);
-      updateSpinButton();
-    }
-  }, 80);
+  spinReel(images, () => {
+    spinBtn.disabled = false;
+    setSpinState({ count: state.count + 1, lockedUntil: 0 });
+    updateSpinButton();
+  });
 });
 
 updateSpinButton();
